@@ -1,0 +1,56 @@
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX wd:   <http://www.wikidata.org/entity/>
+PREFIX wdt:  <http://www.wikidata.org/prop/direct/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX : <urn:absolute:/problem1a#>
+
+INSERT {
+    ?person rdfs:type :Person ;
+              :personName ?personLabel ;
+      		  :alumnusOf  ?univLabel ;
+    		  :employeeOf ?organisationLabel;
+    		  :bornIn ?placeLabel;
+        	  :countryName ?countryLabel.
+    
+    ?organisation rdf:type :Organisation;
+              :locatedIn ?orgnPlaceLabel;
+              :countryName ?orgnCountryLabel.
+                  
+}
+WHERE {
+  SERVICE <https://query.wikidata.org/sparql>  {
+                                       #Subject predicate object format
+      ?person wdt:P31 wd:Q5;           #person instanceOf Human
+        wdt:P69 ?univ;                 #person studiedAt University
+        rdfs:label ?personLabel;       #Retreive label for the person
+		wdt:P108 ?organisation;        #person employer organisation
+        wdt:P19 ?birthPlace.           #person datofbirth birthPlace
+            
+      ?univ wdt:P31 wd:Q3918;          #university instanceOf University
+        wdt:P17 wd:Q34;                #university country Sweden
+        wdt:P571 ?founded;             #university inception founded
+        rdfs:label ?univLabel.         #Retreive label for university
+	
+      ?birthPlace wdt:P17 ?country.  #birthPlace country country
+          
+      ?organisation wdt:P131 ?orgnPlace.   #locatedIn orgnPlace
+      
+      ?orgnPlace wdt:P17 ?orgnCountry.     #orgnPlace country orgnCountry
+      
+      #Retrieve labels for birthPlace, country, organisation, orgn place and orgn Country
+      ?birthPlace rdfs:label ?placeLabel.    
+      ?country rdfs:label ?countryLabel.  
+      ?organisation rdfs:label ?organisationLabel.
+      ?orgnCountry rdfs:label ?orgnCountryLabel.
+      ?orgnPlace rdfs:label ?orgnPlaceLabel.
+      
+      #Filter values where language is Swedish for below fields   
+      FILTER(LANGMATCHES(LANG(?personLabel), "sv"))
+      FILTER(LANGMATCHES(LANG(?univLabel), "sv"))
+      FILTER(LANGMATCHES(LANG(?organisationLabel), "sv"))
+      FILTER(LANGMATCHES(LANG(?placeLabel), "sv"))
+      FILTER(LANGMATCHES(LANG(?countryLabel), "sv"))
+      FILTER(LANGMATCHES(LANG(?orgnPlaceLabel), "sv"))
+      FILTER(LANGMATCHES(LANG(?orgnCountryLabel), "sv"))
+	}
+}

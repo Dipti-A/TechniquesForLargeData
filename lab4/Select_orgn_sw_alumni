@@ -1,0 +1,26 @@
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX wd:   <http://www.wikidata.org/entity/>
+PREFIX wdt:  <http://www.wikidata.org/prop/direct/>
+
+SELECT ?personLabel ?univLabel ?organisationLabel
+
+WHERE {
+    
+    SERVICE <https://query.wikidata.org/sparql> {
+       ?person wdt:P31 wd:Q5;
+        wdt:P69 ?univ;
+        wdt:P108 ?organisation.
+        
+       ?univ wdt:P31 wd:Q3918;
+       		 wdt:P17 wd:Q34;   
+       		 rdfs:label ?univLabel .
+       
+       ?person rdfs:label ?personLabel .
+       ?organisation rdfs:label ?organisationLabel .
+                
+       FILTER (langMatches( lang(?personLabel), "en" ) )
+       FILTER (langMatches( lang(?univLabel), "en" ) )
+       FILTER (langMatches( lang(?organisationLabel), "en" ) )
+       
+    }	
+}

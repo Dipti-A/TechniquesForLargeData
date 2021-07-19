@@ -1,0 +1,23 @@
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX wd:   <http://www.wikidata.org/entity/>
+PREFIX wdt:  <http://www.wikidata.org/prop/direct/>
+
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX : <urn:absolute:/problem1a#>
+INSERT {
+    ?university rdf:type :Organisation ;
+              :organisationName ?universityLabel ;
+    		  :yearFounded ?founded .
+}
+WHERE {
+  SERVICE <https://query.wikidata.org/sparql>  {
+  	?university wdt:P31 wd:Q3918;			#university instanceOf University
+  		#?university wdt:P31 wd:Q68295960.	
+  		wdt:P17 wd:Q34;        			#university country Sweden       
+   		wdt:P571 ?founded ;	   		#university inception founded
+   		rdfs:label ?universityLabel .        	#Retreive label for university
+        
+   
+		FILTER ( lang(?universityLabel) = "en" )
+	}
+}

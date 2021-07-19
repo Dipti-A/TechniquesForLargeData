@@ -1,0 +1,17 @@
+SELECT ?personLabel ?birthPlaceLabel ?employerLabel ?countryLabel ?univLabel  ?founded 
+
+WHERE {
+  ?person wdt:P31 wd:Q5;
+        wdt:P69 ?univ;
+        wdt:P19 ?birthPlace;
+        wdt:P27 ?country;
+        wdt:P108 ?employer.
+                         
+  ?univ wdt:P31 wd:Q3918;
+        wdt:P17 wd:Q34 ;
+        wdt:P571 ?founded .
+  
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
+}
+LIMIT 50
+
