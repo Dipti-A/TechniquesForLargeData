@@ -1,0 +1,68 @@
+
+
+Change Raw url to point to your csv file:
+=========================================
+https://raw.githubusercontent.com/Dipti-A/Dipti-A/main/query-result.csv
+
+
+Not required to be executed on neo4j for assignment
+Create data model using cipher From Arrow:
+==========================================
+
+CREATE 
+  (`0` :Person ) ,
+  (`1` :Organisation ) ,
+  (`2` :University ) ,
+  (`5` :Place ) ,
+  (`6` :Place ) ,
+  (`0`)-[:`employeeOf` ]->(`1`),
+  (`0`)-[:`alumunusOf` ]->(`2`),
+  (`0`)-[:`bornIn` ]->(`5`),
+  (`2`)-[:`isA` ]->(`1`),
+  (`1`)-[:`isLocatedIn` ]->(`6`)
+
+
+Not required to be executed on neo4j for assignment
+To add rows one by one:
+========================
+CREATE  (`0` :Person {name:"Otto Maenchen-Helfen"}) , (`1` :Organisation {organisationLabel:"University of California, Berkeley"} ) , (`2` :University {univLabel:"Göteborgs universitet"} ) , (`5` :Place {orgnPlaceLabel:"Berkeley"} ) , (`0`)-[:`employeeOf` ]->(`1`), (`0`)-[:`alumunusOf` ]->(`2`), (`1`)-[:`isLocatedIn` ]->(`5`), (`0`)-[:`bornIn` ]->(`5`), (`2`)-[:`isA` ]->(`1`)
+
+
+
+Delete data:
+============
+
+MATCH (n)
+DETACH DELETE n
+
+
+Create node and relationship and populate data from csv:
+=========================================================
+
+LOAD CSV WITH HEADERS FROM 'https://raw.githubusercontent.com/Dipti-A/Dipti-A/main/query-result.csv' AS row
+
+CREATE  (`0` :Person {personLabel:row.personLabel}) , (`1` :Organisation {organisationLabel:row.organisationLabel} ) , (`2` :University {univLabel:row.univLabel} ) , (`5` :Place {birthPlaceLabel:row.placeLabel, birthCountryLabel:row.countryLabel} ), (`6` :Place {orgnPlaceLabel:row.orgnPlaceLabel, orgnCountryLabel:row.orgnCountryLabel} ) ,  (`0`)-[:`employeeOf` ]->(`1`), (`0`)-[:`alumunusOf` ]->(`2`), (`1`)-[:`isLocatedIn` ]->(`6`), (`0`)-[:`bornIn` ]->(`5`), (`2`)-[:`isA` ]->(`1`)
+
+
+Added 9005 labels, created 9005 nodes, set 9005 properties, created 9005 relationships, completed after 9145 ms.
+
+
+
+Testing cipher queries:
+=======================
+MATCH (p:Person)-[:bornIn]->(b:Place) return p,b
+
+MATCH (p:Person)-[:alumunusOf]->(u:University) return p,u
+
+MATCH (p:Person)-[:alumunusOf]->(u:University {univLabel:"Göteborgs universitet"}) return p,u
+
+MATCH (p:Person)-[:bornIn]->(l:Place {birthCountryLabel:"USA"}) return p,l
+
+MATCH (p:Person)-[:alumunusOf]->(u:University {univLabel:"Göteborgs universitet"}) WITH p, u MATCH (p:Person)-[:employeeOf]->(o:Organisation {organisationLabel:"Göteborgs universitet"}) return p,o, u
+
+MATCH (p:Person)-[:alumunusOf]->(u:University {univLabel:"Göteborgs universitet"})
+RETURN labels(p), count(p)
+
+MATCH (p:Person)-[:alumunusOf]->(u:University {univLabel:"Göteborgs universitet"}) WITH p, u MATCH (p:Person)-[:employeeOf]->(o:Organisation) return p,o, u
+
+MATCH (p:Person)-[:alumunusOf]->(u:University {univLabel:"Göteborgs universitet"}) WITH p, u MATCH (p:Person)-[:employeeOf]->(o:Organisation)WHERE exists(o.organisationLabel) return p,u,o ORDER BY o.organisationLabel
